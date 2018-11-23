@@ -21,14 +21,15 @@ public:
 	void DoCollisionTest();
 	void ApplyForce(float x, float y, float eTime);
 	void RenderScene();
-	void AddObject(float pX, float pY, float pZ, float sX, float sY, float vX, float vY);
+	void AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY);
 	void DeleteObject(unsigned int id);
 	int FindEmptyObjectSlot();
 	void Shoot(int shootID);
 	void GarbageCollector();
 	bool RRCollision(float minX, float minY, float maxX, float maxY,
 		float minX1, float minY1, float maxX1, float maxY1);
-
+	bool BBCollision(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+		float minX1, float minY1, float minZ1, float maxX1, float maxY1, float maxZ1);
 private:
 	Object * mObj[MAX_OBJECTS];
 	Renderer * mRenderer;

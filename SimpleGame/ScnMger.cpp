@@ -15,7 +15,7 @@ ScnMger::ScnMger()
 	//Create Hero Object
 	mObj[HERO_ID] = new Object();
 	mObj[HERO_ID]->SetPos(0, 0, 1);
-	mObj[HERO_ID]->SetSize(1, 1);
+	mObj[HERO_ID]->SetSize(0.5f, 0.5f, 0.5f);
 	mObj[HERO_ID]->SetMass(1.f);
 	mObj[HERO_ID]->SetCol(1, 1, 1, 1);
 	mObj[HERO_ID]->SetVel(0, 0);
@@ -23,7 +23,7 @@ ScnMger::ScnMger()
 	mObj[HERO_ID]->SetCoefFric(0.5f);
 	mObj[HERO_ID]->SetKind(KIND_HERO);
 
-	AddObject(2, 0, 1, 1, 1, 0, 0);
+	AddObject(1, 0, 2, 1, 1, 1, 0, 0);
 
 	//Init Renderer
 	mRenderer = new Renderer(500, 500);
@@ -58,7 +58,7 @@ void ScnMger::DoCollisionTest()
 		{
 			continue;
 		}
-
+		int collisionCount = 0;
 		for (int j = 0; j < MAX_OBJECTS; j++)
 		{
 			if (mObj[j] == NULL)
@@ -71,35 +71,44 @@ void ScnMger::DoCollisionTest()
 				continue;
 			}
 			//i obj
-			float pX, pY, pZ, sX, sY;
-			float minX, minY, maxX, maxY;
+			float pX, pY, pZ, sX, sY, sZ;
+			float minX, minY, maxX, maxY, minZ, maxZ;
 			mObj[i]->GetPos(&pX, &pY, &pZ);
-			mObj[i]->GetSize(&sX, &sY);
+			mObj[i]->GetSize(&sX, &sY, &sZ);
 			minX = pX - sX / 2.f;
 			maxX = pX + sX / 2.f;
 			minY = pY - sY / 2.f;
 			maxY = pY + sY / 2.f;
+			minZ = pZ - sZ / 2.f;
+			maxZ = pZ + sZ / 2.f;
 
 			//j obj
-			float pX1, pY1, pZ1, sX1, sY1;
-			float minX1, minY1, maxX1, maxY1;
+			float pX1, pY1, pZ1, sX1, sY1, sZ1;
+			float minX1, minY1, maxX1, maxY1, minZ1, maxZ1;
 			mObj[j]->GetPos(&pX1, &pY1, &pZ1);
-			mObj[j]->GetSize(&sX1, &sY1);
+			mObj[j]->GetSize(&sX1, &sY1, &sZ1);
 			minX1 = pX1 - sX1 / 2.f;
 			maxX1 = pX1 + sX1 / 2.f;
 			minY1 = pY1 - sY1 / 2.f;
 			maxY1 = pY1 + sY1 / 2.f;
-
-			if (RRCollision(minX, minY, maxX, maxY,
-				minX1, minY1, maxX1, maxY1))
+			minZ1 = pZ1 - sZ1 / 2.f;
+			maxZ1 = pZ1 + sZ1 / 2.f;
+			
+			if (BBCollision(minX, minY, maxX, maxY, minZ, maxZ,
+				minX1, minY1, maxX1, maxY1, minZ1, maxZ1))
 			{
-				std::cout << "Collision\n";
-				mObj[i]->SetCol(1, 0, 0, 1);
+				//std::cout << "Collision\n";
+				collisionCount++;
 			}
-			else
-			{
-				mObj[i]->SetCol(0, 0, 0, 1);
-			}
+		}
+		if (collisionCount > 0)
+		{
+			mObj[i]->SetCol(1, 0, 0, 1);
+			//collisionCount = 0;
+		}
+		else
+		{
+			mObj[i]->SetCol(1, 1, 1, 1);
 		}
 	}
 }
@@ -132,6 +141,24 @@ bool ScnMger::RRCollision(float minX, float minY, float maxX, float maxY,
 	return true;
 }
 
+bool ScnMger::BBCollision(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+	float minX1, float minY1, float minZ1, float maxX1, float maxY1, float maxZ1)
+{
+	if (maxX < minX1)
+		return false;
+	if (maxX1 < minX)
+		return false;
+	if (maxY < minY1)
+		return false;
+	if (maxY1 < minY)
+		return false;
+	if (maxZ < minZ1)
+		return false;
+	if (maxZ1 < minZ)
+		return false;
+	return true;
+}
+
 void ScnMger::ApplyForce(float x, float y, float eTime)
 {
 	mObj[HERO_ID]->ApplyForce(x, y, eTime);
@@ -154,9 +181,9 @@ void ScnMger::RenderScene()
 	{
 		if (mObj[i] != NULL)
 		{
-			float x, y, z, sizeX, sizeY, r, g, b, a;
+			float x, y, z, sizeX, sizeY, sizeZ, r, g, b, a;
 			mObj[i]->GetPos(&x, &y, &z);
-			mObj[i]->GetSize(&sizeX, &sizeY);
+			mObj[i]->GetSize(&sizeX, &sizeY, &sizeZ);
 			mObj[i]->GetCol(&r, &g, &b, &a);
 
 			//mRenderer->DrawSolidRect(x*100.f, y*100.f, 0.f, sizeX*100.f, sizeY*100.f, r, g, b, a);
@@ -197,7 +224,7 @@ void ScnMger::RenderScene()
 	}
 }
 
-void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float vX, float vY)
+void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY)
 {
 	int id = FindEmptyObjectSlot();
 	if (id < 0)
@@ -207,7 +234,7 @@ void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float 
 	
 	mObj[id] = new Object();
 	mObj[id]->SetPos(pX, pY, pZ);
-	mObj[id]->SetSize(sX, sY);
+	mObj[id]->SetSize(sX, sY, sZ);
 	mObj[id]->SetMass(1.f);
 	mObj[id]->SetCol(1, 1, 1, 1);
 	mObj[id]->SetVel(vX, vY);
@@ -277,5 +304,5 @@ void ScnMger::Shoot(int shootID)
 	bvX = bvX + vX;
 	bvY = bvY + vY;
 
-	AddObject(pX, pY, pZ, 0.2, 0.2, bvX, bvY);
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY);
 }

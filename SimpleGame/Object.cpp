@@ -85,16 +85,18 @@ void Object::SetPos(float x, float y, float z)
 	mPosZ = z;
 }
 
-void Object::GetSize(float *x, float *y)
+void Object::GetSize(float *x, float *y, float *z)
 {
 	*x = mSizeX;
 	*y = mSizeY;
+	*z = mSizeZ;
 }
 
-void Object::SetSize(float x, float y)
+void Object::SetSize(float x, float y, float z)
 {
 	mSizeX = x;
 	mSizeY = y;
+	mSizeZ = z;
 }
 
 void Object::GetMass(float *x)

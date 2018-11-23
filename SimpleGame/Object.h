@@ -5,7 +5,7 @@ class Object
 private:
 	float mPosX, mPosY, mPosZ;
 	float mColR, mColG, mColB, mColA;
-	float mSizeX, mSizeY;
+	float mSizeX, mSizeY, mSizeZ;
 	float mMass;
 	float mVelX, mVelY;
 	float mAccX, mAccY;
@@ -22,8 +22,8 @@ public:
 	void GetPos(float *x, float *y, float *z);
 	void SetPos(float x, float y, float z);
 	
-	void GetSize(float *x, float *y);
-	void SetSize(float x, float y);
+	void GetSize(float *x, float *y, float *z);
+	void SetSize(float x, float y, float z);
 
 	void GetCol(float *r, float *g, float *b, float *a);
 	void SetCol(float r, float g, float b, float a);
