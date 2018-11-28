@@ -166,3 +166,12 @@ void Object::SetKind(int kind)
 {
 	mKind = kind;
 }
+
+void Object::GetHP(int *hp)
+{
+	*hp = mHP;
+}
+void Object::SetHP(int hp)
+{
+	mHP = hp;
+}

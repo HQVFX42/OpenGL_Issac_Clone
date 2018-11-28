@@ -12,4 +12,5 @@
 
 #define KIND_HERO 0
 #define KIND_BULLEFT 1
+#define KIND_BUILDING 2
 

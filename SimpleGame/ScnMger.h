@@ -21,7 +21,7 @@ public:
 	void DoCollisionTest();
 	void ApplyForce(float x, float y, float eTime);
 	void RenderScene();
-	void AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY);
+	void AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, int kind, int hp);
 	void DeleteObject(unsigned int id);
 	int FindEmptyObjectSlot();
 	void Shoot(int shootID);
@@ -30,6 +30,8 @@ public:
 		float minX1, float minY1, float maxX1, float maxY1);
 	bool BBCollision(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
 		float minX1, float minY1, float minZ1, float maxX1, float maxY1, float maxZ1);
+	void ProcessCollision(int i, int j);
+
 private:
 	Object * mObj[MAX_OBJECTS];
 	Renderer * mRenderer;

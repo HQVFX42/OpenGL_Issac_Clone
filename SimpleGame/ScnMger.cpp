@@ -14,16 +14,18 @@ ScnMger::ScnMger()
 
 	//Create Hero Object
 	mObj[HERO_ID] = new Object();
-	mObj[HERO_ID]->SetPos(0, 0, 1);
+	mObj[HERO_ID]->SetPos(0.f, 0.f, 0.5f);
 	mObj[HERO_ID]->SetSize(0.5f, 0.5f, 0.5f);
 	mObj[HERO_ID]->SetMass(1.f);
-	mObj[HERO_ID]->SetCol(1, 1, 1, 1);
-	mObj[HERO_ID]->SetVel(0, 0);
-	mObj[HERO_ID]->SetAcc(0, 0);
+	mObj[HERO_ID]->SetCol(1.f, 1.f, 1.f, 1.f);
+	mObj[HERO_ID]->SetVel(0.f, 0.f);
+	mObj[HERO_ID]->SetAcc(0.f, 0.f);
 	mObj[HERO_ID]->SetCoefFric(0.5f);
 	mObj[HERO_ID]->SetKind(KIND_HERO);
+	mObj[HERO_ID]->SetHP(10000);
 
-	AddObject(1, 0, 2, 1, 1, 1, 0, 0);
+	//Test addobject test building
+	AddObject(1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, KIND_BUILDING, 10000);
 
 	//Init Renderer
 	mRenderer = new Renderer(500, 500);
@@ -58,8 +60,10 @@ void ScnMger::DoCollisionTest()
 		{
 			continue;
 		}
+
 		int collisionCount = 0;
-		for (int j = 0; j < MAX_OBJECTS; j++)
+
+		for (int j = i+1; j < MAX_OBJECTS; j++)
 		{
 			if (mObj[j] == NULL)
 			{
@@ -99,17 +103,53 @@ void ScnMger::DoCollisionTest()
 			{
 				//std::cout << "Collision\n";
 				collisionCount++;
+				ProcessCollision(i, j);
 			}
 		}
 		if (collisionCount > 0)
 		{
 			mObj[i]->SetCol(1, 0, 0, 1);
-			//collisionCount = 0;
 		}
 		else
 		{
 			mObj[i]->SetCol(1, 1, 1, 1);
 		}
+	}
+}
+
+void ScnMger::ProcessCollision(int i, int j)
+{
+	if (mObj[i] == NULL || mObj[j] == NULL)
+		return;
+
+	Object *ob1 = mObj[i];
+	Object *ob2 = mObj[j];
+	int kind1, kind2;
+	ob1->GetKind(&kind1);
+	ob2->GetKind(&kind2);
+
+	if (kind1 == KIND_BUILDING && kind2 == KIND_BULLEFT)
+	{
+		int hp1, hp2;
+		ob1->GetHP(&hp1);	//building
+		ob2->GetHP(&hp2);	//bullet
+		hp1 = hp1 - hp2;	//apply damage
+		hp2 = 0;
+
+		ob1->SetHP(hp1);
+		ob2->SetHP(hp2);
+	}
+
+	if (kind1 == KIND_BULLEFT && kind2 == KIND_BUILDING)
+	{
+		int hp1, hp2;
+		ob1->GetHP(&hp1);	//building
+		ob2->GetHP(&hp2);	//bullet
+		hp2 = hp2 - hp1;	//apply damage
+		hp1 = 0;
+
+		ob1->SetHP(hp1);
+		ob2->SetHP(hp2);
 	}
 }
 
@@ -224,7 +264,7 @@ void ScnMger::RenderScene()
 	}
 }
 
-void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY)
+void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, int kind, int hp)
 {
 	int id = FindEmptyObjectSlot();
 	if (id < 0)
@@ -240,7 +280,8 @@ void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float 
 	mObj[id]->SetVel(vX, vY);
 	mObj[id]->SetAcc(0, 0);
 	mObj[id]->SetCoefFric(0.5f);
-	mObj[id]->SetKind(KIND_HERO);
+	mObj[id]->SetKind(kind);
+	mObj[id]->SetHP(hp);
 }
 
 int ScnMger::FindEmptyObjectSlot()
@@ -304,5 +345,5 @@ void ScnMger::Shoot(int shootID)
 	bvX = bvX + vX;
 	bvY = bvY + vY;
 
-	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY);
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, KIND_BULLEFT, 20);
 }

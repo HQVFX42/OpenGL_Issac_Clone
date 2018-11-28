@@ -10,7 +10,9 @@ private:
 	float mVelX, mVelY;
 	float mAccX, mAccY;
 	float mCoefFric;
+
 	int mKind;
+	int mHP;
 
 public:
 	Object();
@@ -42,5 +44,8 @@ public:
 
 	void GetKind(int *kind);
 	void SetKind(int kind);
+
+	void GetHP(int *hp);
+	void SetHP(int hp);
 };
 
