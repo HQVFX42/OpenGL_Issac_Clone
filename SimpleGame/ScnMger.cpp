@@ -34,7 +34,6 @@ ScnMger::ScnMger()
 	mTestTexture = mRenderer->CreatePngTexture("./Textures/images.png");
 	mTexSeq = mRenderer->CreatePngTexture("./Textures/spriteAnim3.png");
 
-	
 }
 
 ScnMger::~ScnMger()
@@ -98,8 +97,8 @@ void ScnMger::DoCollisionTest()
 			minZ1 = pZ1 - sZ1 / 2.f;
 			maxZ1 = pZ1 + sZ1 / 2.f;
 			
-			if (BBCollision(minX, minY, maxX, maxY, minZ, maxZ,
-				minX1, minY1, maxX1, maxY1, minZ1, maxZ1))
+			if (BBCollision(minX, minY, minZ, maxX, maxY, maxZ,
+				minX1, minY1, minZ1, maxX1, maxY1, maxZ1))
 			{
 				//std::cout << "Collision\n";
 				collisionCount++;
@@ -161,9 +160,41 @@ void ScnMger::GarbageCollector()
 		{
 			float x, y, z;
 			mObj[i]->GetPos(&x, &y, &z);
+
+			int kind;
+			mObj[i]->GetKind(&kind);
+
+			int hp;
+			mObj[i]->GetHP(&hp);
+
+			float vx, vy, mag;
+			mObj[i]->GetVel(&vx, &vy);
+			mag = sqrtf(vx * vx + vy * vy);		//속도의 크기
+
 			if (x > 2.5f || x <-2.5f || y >2.5f || y < -2.5f)
+			{
+				DeleteObject(i);
+			}
+
+			if (kind == KIND_BULLEFT || kind == KIND_BUILDING)
+			{
+				if(hp <= 0)
+				{
 					DeleteObject(i);
-		}	
+					continue;
+				}
+			}
+
+			if (kind == KIND_BULLEFT)
+			{
+				if (mag < FLT_EPSILON) 
+				{
+					DeleteObject(i);
+					continue;
+				}
+			}
+		
+		}
 	}
 }
 
@@ -279,7 +310,7 @@ void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float 
 	mObj[id]->SetCol(1, 1, 1, 1);
 	mObj[id]->SetVel(vX, vY);
 	mObj[id]->SetAcc(0, 0);
-	mObj[id]->SetCoefFric(0.5f);
+	mObj[id]->SetCoefFric(0.2f);
 	mObj[id]->SetKind(kind);
 	mObj[id]->SetHP(hp);
 }
@@ -310,7 +341,7 @@ void ScnMger::Shoot(int shootID)
 	{
 		return;
 	}
-	float amount = 3.f;
+	float amount = 6.f;	//Bullet Speed
 	float bvX, bvY;
 	bvX = 0.f;
 	bvY = 0.f;
