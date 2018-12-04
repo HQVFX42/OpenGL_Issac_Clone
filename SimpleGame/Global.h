@@ -11,6 +11,6 @@
 #define SHOOT_DOWN 4
 
 #define KIND_HERO 0
-#define KIND_BULLEFT 1
+#define KIND_BULLET 1
 #define KIND_BUILDING 2
 

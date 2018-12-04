@@ -127,7 +127,7 @@ void ScnMger::ProcessCollision(int i, int j)
 	ob1->GetKind(&kind1);
 	ob2->GetKind(&kind2);
 
-	if (kind1 == KIND_BUILDING && kind2 == KIND_BULLEFT)
+	if (kind1 == KIND_BUILDING && kind2 == KIND_BULLET)
 	{
 		int hp1, hp2;
 		ob1->GetHP(&hp1);	//building
@@ -139,7 +139,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob2->SetHP(hp2);
 	}
 
-	if (kind1 == KIND_BULLEFT && kind2 == KIND_BUILDING)
+	if (kind1 == KIND_BULLET && kind2 == KIND_BUILDING)
 	{
 		int hp1, hp2;
 		ob1->GetHP(&hp1);	//building
@@ -176,7 +176,7 @@ void ScnMger::GarbageCollector()
 				DeleteObject(i);
 			}
 
-			if (kind == KIND_BULLEFT || kind == KIND_BUILDING)
+			if (kind == KIND_BULLET || kind == KIND_BUILDING)
 			{
 				if(hp <= 0)
 				{
@@ -185,7 +185,7 @@ void ScnMger::GarbageCollector()
 				}
 			}
 
-			if (kind == KIND_BULLEFT)
+			if (kind == KIND_BULLET)
 			{
 				if (mag < FLT_EPSILON) 
 				{
@@ -376,5 +376,5 @@ void ScnMger::Shoot(int shootID)
 	bvX = bvX + vX;
 	bvY = bvY + vY;
 
-	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, KIND_BULLEFT, 20);
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, KIND_BULLET, 20);
 }
