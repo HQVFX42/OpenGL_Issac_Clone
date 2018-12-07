@@ -34,7 +34,7 @@ ScnMger *gScnMger = NULL;
 
 DWORD gPrevT = 0;
 
-BOOL gKeyW, gKeyA, gKeyS, gKeyD = false;
+BOOL gKeyW, gKeyA, gKeyS, gKeyD, gKeySP = false;
 
 int gShoot = SHOOT_NONE;
 
@@ -55,16 +55,20 @@ void RenderScene(void)
 
 	//std::cout << "ET : " << eTime << std::endl;
 
-
-	float forceX = 0; 
+	
+	float forceX = 0.f; 
 	float forceY = 0.f;
+	float forceZ = 0.f;
+	float amount = 8.f;
+	float zAmount = 5.f;
 
-	if (gKeyW) { forceY += 6.f; }
-	if (gKeyS) { forceY -= 6.f; }
-	if (gKeyA) { forceX -= 6.f; }
-	if (gKeyD) { forceX += 6.f; }
+	if (gKeyW) { forceY += amount; }
+	if (gKeyS) { forceY -= amount; }
+	if (gKeyA) { forceX -= amount; }
+	if (gKeyD) { forceX += amount; }
+	if (gKeySP) { forceZ += zAmount; }
 
-	gScnMger->ApplyForce(forceX, forceY, eTime);
+	gScnMger->ApplyForce(forceX, forceY, forceZ, eTime);
 	gScnMger->Update(eTime);
 	gScnMger->RenderScene();
 	gScnMger->Shoot(gShoot);
@@ -138,6 +142,7 @@ void KeyDownInput(unsigned char key, int x, int y)
 	if (key == 's' || key == 'S') { gKeyS = TRUE; }
 	if (key == 'a' || key == 'A') { gKeyA = TRUE; }
 	if (key == 'd' || key == 'D') { gKeyD = TRUE; }
+	if (key == ' ') { gKeySP = TRUE; }
 }
 
 void KeyUpInput(unsigned char key, int x, int y)
@@ -146,6 +151,7 @@ void KeyUpInput(unsigned char key, int x, int y)
 	if (key == 's' || key == 'S') { gKeyS = FALSE; }
 	if (key == 'a' || key == 'A') { gKeyA = FALSE; }
 	if (key == 'd' || key == 'D') { gKeyD = FALSE; }
+	if (key == ' ') { gKeySP = FALSE; }
 }
 
 void SpecialKeyDownInput(int key, int x, int y)

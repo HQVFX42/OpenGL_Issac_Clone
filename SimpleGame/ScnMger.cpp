@@ -18,14 +18,14 @@ ScnMger::ScnMger()
 	mObj[HERO_ID]->SetSize(0.5f, 0.5f, 0.5f);
 	mObj[HERO_ID]->SetMass(1.f);
 	mObj[HERO_ID]->SetCol(1.f, 1.f, 1.f, 1.f);
-	mObj[HERO_ID]->SetVel(0.f, 0.f);
-	mObj[HERO_ID]->SetAcc(0.f, 0.f);
+	mObj[HERO_ID]->SetVel(0.f, 0.f, 0.f);
+	mObj[HERO_ID]->SetAcc(0.f, 0.f, 0.f);
 	mObj[HERO_ID]->SetCoefFric(0.5f);
 	mObj[HERO_ID]->SetKind(KIND_HERO);
 	mObj[HERO_ID]->SetHP(10000);
 
 	//Test addobject test building
-	AddObject(1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, KIND_BUILDING, 10000);
+	AddObject(1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, KIND_BUILDING, 10000, STATE_GROUND);
 
 	//Init Renderer
 	mRenderer = new Renderer(500, 500);
@@ -167,9 +167,9 @@ void ScnMger::GarbageCollector()
 			int hp;
 			mObj[i]->GetHP(&hp);
 
-			float vx, vy, mag;
-			mObj[i]->GetVel(&vx, &vy);
-			mag = sqrtf(vx * vx + vy * vy);		//속도의 크기
+			float vx, vy, vz, mag;
+			mObj[i]->GetVel(&vx, &vy, &vz);
+			mag = sqrtf(vx*vx + vy*vy + vz*vz);		//속도의 크기
 
 			if (x > 2.5f || x <-2.5f || y >2.5f || y < -2.5f)
 			{
@@ -230,9 +230,9 @@ bool ScnMger::BBCollision(float minX, float minY, float minZ, float maxX, float 
 	return true;
 }
 
-void ScnMger::ApplyForce(float x, float y, float eTime)
+void ScnMger::ApplyForce(float x, float y, float z, float eTime)
 {
-	mObj[HERO_ID]->ApplyForce(x, y, eTime);
+	mObj[HERO_ID]->ApplyForce(x, y, z, eTime);
 }
 
 int gSeq = 0;
@@ -245,8 +245,6 @@ void ScnMger::RenderScene()
 	//if (theta >= 360) theta = 0;
 	//else theta += 0.2;
 	//g_Renderer->DrawSolidRect(x + cos(theta * PI / 180) * r, y + sin(theta * PI / 180) * r, 0, theta / 10, 1, 0, 1, 1);
-
-	//g_Renderer->DrawSolidRect(xx, yy, 0, 10, 1, 0, 1, 1);
 
 	for (int i = 0; i < MAX_OBJECTS; i++)
 	{
@@ -261,9 +259,9 @@ void ScnMger::RenderScene()
 
 			
 			mRenderer->DrawTextureRectHeight(
-			x*100.f + 50,
+			x*100.f,
 			y*100.f,
-			0.f,
+			0,
 			sizeX*100.f,
 			sizeY*100.f,
 			r, g, b, a,
@@ -295,7 +293,7 @@ void ScnMger::RenderScene()
 	}
 }
 
-void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, int kind, int hp)
+void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, float vZ, int kind, int hp, int state)
 {
 	int id = FindEmptyObjectSlot();
 	if (id < 0)
@@ -307,10 +305,10 @@ void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float 
 	mObj[id]->SetPos(pX, pY, pZ);
 	mObj[id]->SetSize(sX, sY, sZ);
 	mObj[id]->SetMass(1.f);
-	mObj[id]->SetCol(1, 1, 1, 1);
-	mObj[id]->SetVel(vX, vY);
-	mObj[id]->SetAcc(0, 0);
-	mObj[id]->SetCoefFric(0.2f);
+	mObj[id]->SetCol(1.f, 1.f, 1.f, 1.f);
+	mObj[id]->SetVel(vX, vY, vZ);
+	mObj[id]->SetAcc(0.f, 0.f, 0.f);
+	mObj[id]->SetCoefFric(0.5f);
 	mObj[id]->SetKind(kind);
 	mObj[id]->SetHP(hp);
 }
@@ -341,10 +339,11 @@ void ScnMger::Shoot(int shootID)
 	{
 		return;
 	}
-	float amount = 6.f;	//Bullet Speed
-	float bvX, bvY;
+	float amount = 10.f;	//Bullet Speed
+	float bvX, bvY, bvZ;
 	bvX = 0.f;
 	bvY = 0.f;
+	bvZ = 0.f;
 
 	switch (shootID)
 	{
@@ -370,11 +369,12 @@ void ScnMger::Shoot(int shootID)
 
 	float pX, pY, pZ;
 	mObj[HERO_ID]->GetPos(&pX, &pY, &pZ);
-	float vX, vY;
-	mObj[HERO_ID]->GetVel(&vX, &vY);
+	float vX, vY, vZ;
+	mObj[HERO_ID]->GetVel(&vX, &vY, &vZ);
 
 	bvX = bvX + vX;
 	bvY = bvY + vY;
+	bvZ = bvZ + vZ;
 
-	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, KIND_BULLET, 20);
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 20,STATE_AIR);
 }

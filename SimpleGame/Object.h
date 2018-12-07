@@ -7,19 +7,20 @@ private:
 	float mColR, mColG, mColB, mColA;
 	float mSizeX, mSizeY, mSizeZ;
 	float mMass;
-	float mVelX, mVelY;
-	float mAccX, mAccY;
+	float mVelX, mVelY, mVelZ;
+	float mAccX, mAccY, mAccZ;
 	float mCoefFric;
 
 	int mKind;
 	int mHP;
+	int mState;
 
 public:
 	Object();
 	~Object();
 
 	void Update(float eTime);
-	void ApplyForce(float x, float y, float eTime);
+	void ApplyForce(float x, float y, float z, float eTime);
 
 	void GetPos(float *x, float *y, float *z);
 	void SetPos(float x, float y, float z);
@@ -30,11 +31,11 @@ public:
 	void GetCol(float *r, float *g, float *b, float *a);
 	void SetCol(float r, float g, float b, float a);
 
-	void GetVel(float *x, float *y);
-	void SetVel(float x, float y);
+	void GetVel(float *x, float *y, float *z);
+	void SetVel(float x, float y, float z);
 
-	void GetAcc(float *x, float *y);
-	void SetAcc(float x, float y);
+	void GetAcc(float *x, float *y, float *z);
+	void SetAcc(float x, float y, float z);
 
 	void GetMass(float *x);
 	void SetMass(float x);
@@ -47,5 +48,8 @@ public:
 
 	void GetHP(int *hp);
 	void SetHP(int hp);
+
+	void GetState(int *state);
+	void SetState(int state);
 };
 

@@ -19,9 +19,12 @@ public:
 
 	void Update(float eTime);
 	void DoCollisionTest();
-	void ApplyForce(float x, float y, float eTime);
+	void ApplyForce(float x, float y, float z, float eTime);
 	void RenderScene();
-	void AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, int kind, int hp);
+	void AddObject(float pX, float pY, float pZ, 
+		float sX, float sY, float sZ,
+		float vX, float vY, float vZ,
+		int kind, int hp, int state);
 	void DeleteObject(unsigned int id);
 	int FindEmptyObjectSlot();
 	void Shoot(int shootID);

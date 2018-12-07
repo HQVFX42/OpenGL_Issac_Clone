@@ -51,24 +51,29 @@ void Object::Update(float eTime)
 	//Calc velocity
 	mVelX = mVelX + mAccX * eTime;
 	mVelY = mVelY + mAccY * eTime;
+	mVelZ = mVelZ + mAccZ * eTime;
 
 	//Calc position
 	mPosX = mPosX + mVelX * eTime;
 	mPosY = mPosY + mVelY * eTime;
+	mPosZ = mPosZ + mVelZ * eTime;
 	
 	//Calc friction
 }
 
-void Object::ApplyForce(float x, float y, float eTime)
+void Object::ApplyForce(float x, float y, float z, float eTime)
 {
 	mAccX = x / mMass;
 	mAccY = y / mMass;
+	mAccZ = z / mMass;
 
 	mVelX = mVelX + mAccX * eTime;
 	mVelY = mVelY + mAccY * eTime;
+	mVelZ = mVelZ + mAccZ * eTime;
 
 	mAccX = 0.f;
 	mAccY = 0.f;
+	mAccZ = 0.f;
 }
 
 void Object::GetPos(float *x, float *y, float *z)
@@ -126,26 +131,30 @@ void Object::SetCol(float r, float g, float b, float a)
 	mColA = a;
 }
 
-void Object::GetVel(float *x, float *y)
+void Object::GetVel(float *x, float *y, float *z)
 {
 	*x = mVelX;
 	*y = mVelY;
+	*z = mVelZ;
 }
-void Object::SetVel(float x, float y)
+void Object::SetVel(float x, float y, float z)
 {
 	mVelX = x;
 	mVelY = y;
+	mVelZ = z;
 }
 
-void Object::GetAcc(float *x, float *y)
+void Object::GetAcc(float *x, float *y, float *z)
 {
 	*x = mAccX;
 	*y = mAccY;
+	*z = mAccZ;
 }
-void Object::SetAcc(float x, float y)
+void Object::SetAcc(float x, float y, float z)
 {
 	mAccX = x;
 	mAccY = y;
+	mAccZ = z;
 }
 
 void Object::GetCoefFric(float *x)
@@ -174,4 +183,13 @@ void Object::GetHP(int *hp)
 void Object::SetHP(int hp)
 {
 	mHP = hp;
+}
+
+void Object::GetState(int *state)
+{
+	*state = mState;
+}
+void Object::SetState(int state)
+{
+	mState = state;
 }
