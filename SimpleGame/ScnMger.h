@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Object.h"
 #include "Global.h"
+#include "Sound.h"
 
 #include <string>
 #include <cstdlib>
@@ -38,9 +39,15 @@ public:
 private:
 	Object * mObj[MAX_OBJECTS];
 	Renderer * mRenderer;
+	Sound * mSound;
 	
 	GLuint mTestTexture = 0;
 	GLuint mTexSeq = 0;
+	GLuint mTestParticle = 0;
+
+	int mSoundBG = 0;
+	int mSoundFire = 0;
+	int mSoundExplosion = 0;
 };
 
 

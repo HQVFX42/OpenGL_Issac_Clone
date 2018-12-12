@@ -34,6 +34,15 @@ ScnMger::ScnMger()
 	mTestTexture = mRenderer->CreatePngTexture("./Textures/images.png");
 	mTexSeq = mRenderer->CreatePngTexture("./Textures/spriteAnim3.png");
 
+	//Init Sound
+	mSound = new Sound();
+
+	//Load Sound
+	mSoundBG = mSound->CreateSound("./Sounds/BG.mp3");
+	mSoundFire = mSound->CreateSound("./Sounds/shotgun.mp3");
+	mSoundExplosion = mSound->CreateSound("./Sounds/Explosion.mp3");
+	mSound->PlaySound(mSoundBG, true, 3.f);
+
 }
 
 ScnMger::~ScnMger()
@@ -137,6 +146,8 @@ void ScnMger::ProcessCollision(int i, int j)
 
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
+
+		mSound->PlaySound(mSoundExplosion, false, 3.f);
 	}
 
 	if (kind1 == KIND_BULLET && kind2 == KIND_BUILDING)
@@ -149,6 +160,8 @@ void ScnMger::ProcessCollision(int i, int j)
 
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
+
+		mSound->PlaySound(mSoundExplosion, false, 3.f);
 	}
 }
 
@@ -232,6 +245,13 @@ bool ScnMger::BBCollision(float minX, float minY, float minZ, float maxX, float 
 
 void ScnMger::ApplyForce(float x, float y, float z, float eTime)
 {
+	int state;
+	mObj[HERO_ID]->GetState(&state);
+	if (state == STATE_AIR)
+	{
+		z = 1.f;
+	}
+
 	mObj[HERO_ID]->ApplyForce(x, y, z, eTime);
 }
 
@@ -256,7 +276,6 @@ void ScnMger::RenderScene()
 			mObj[i]->GetCol(&r, &g, &b, &a);
 
 			//mRenderer->DrawSolidRect(x*100.f, y*100.f, 0.f, sizeX*100.f, sizeY*100.f, r, g, b, a);
-
 			
 			mRenderer->DrawTextureRectHeight(
 			x*100.f,
@@ -267,6 +286,14 @@ void ScnMger::RenderScene()
 			r, g, b, a,
 			mTestTexture,
 			z*100.f
+			);
+	
+			mRenderer->DrawSolidRectGauge(
+				x*100.f, y*100.f+z*100.f, 0,
+				sizeX*100.f, 3,
+				1, 0, 0, 1,
+				z*100.f,
+				0.5f
 			);
 
 			// 스프라이트 애니메이션
@@ -291,6 +318,17 @@ void ScnMger::RenderScene()
 			);*/
 		}
 	}
+	
+	mRenderer->DrawParticleClimate(
+		0, 0, 0,
+		5,
+		1, 1, 1, 1,
+		- 1.f, 0.1f,
+		mTestTexture,
+		1.f,
+		gSeq);
+
+	gSeq += 0.01f;
 }
 
 void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, float vZ, int kind, int hp, int state)
@@ -377,4 +415,6 @@ void ScnMger::Shoot(int shootID)
 	bvZ = bvZ + vZ;
 
 	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 20,STATE_AIR);
+
+	mSound->PlaySound(mSoundFire, false, 3.f);
 }

@@ -60,7 +60,7 @@ void RenderScene(void)
 	float forceY = 0.f;
 	float forceZ = 0.f;
 	float amount = 8.f;
-	float zAmount = 5.f;
+	float zAmount = 100.f;
 
 	if (gKeyW) { forceY += amount; }
 	if (gKeyS) { forceY -= amount; }
@@ -74,6 +74,7 @@ void RenderScene(void)
 	gScnMger->Shoot(gShoot);
 	gScnMger->GarbageCollector();
 	gScnMger->DoCollisionTest();
+
 
 	std::cout << gKeyW << "\t" << gKeyS << "\t" << gKeyA << "\t" << gKeyD << "\t" << std::endl;
 	

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Object.h"
+#include "Global.h"
 #include <math.h>
 #include <float.h>
 
@@ -15,7 +16,7 @@ Object::~Object()
 void Object::Update(float eTime)
 {
 	//단위벡터구하기(정규화) 항상 반대방향으로 마찰력 주기 위함
-	float magVel = sqrtf(mVelX*mVelX + mVelY * mVelY);
+	float magVel = sqrtf(mVelX*mVelX + mVelY * mVelY + mVelZ * mVelZ);
 	float velX = mVelX / magVel;
 	float velY = mVelY / magVel;
 
@@ -29,9 +30,11 @@ void Object::Update(float eTime)
 	{
 		mVelX = 0.f;
 		mVelY = 0.f;
+		mVelZ = 0.f;
 	}
 	else
 	{
+		//Calc friction
 		float accX = fricX / mMass;
 		float accY = fricY / mMass;
 
@@ -46,6 +49,9 @@ void Object::Update(float eTime)
 			mVelY = 0.f;
 		else
 			mVelY = afterVelY;
+
+		//Gravity
+		mVelZ = mVelZ - GRAVITY * eTime;
 	}
 
 	//Calc velocity
@@ -56,9 +62,19 @@ void Object::Update(float eTime)
 	//Calc position
 	mPosX = mPosX + mVelX * eTime;
 	mPosY = mPosY + mVelY * eTime;
-	mPosZ = mPosZ + mVelZ * eTime;
-	
-	//Calc friction
+	mPosZ = mPosZ + mVelZ * 0.1f;		//eTime하면 잘 안되서 하드코딩으로 0.1로 박아놓는다.
+
+	if (mPosZ <= 0.5f)
+	{
+		mState = STATE_GROUND;
+		mVelZ = 0;
+		mPosZ = 0.5f;
+	}
+	else
+	{
+		mState = STATE_AIR;
+	}
+
 }
 
 void Object::ApplyForce(float x, float y, float z, float eTime)

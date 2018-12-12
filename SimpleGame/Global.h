@@ -16,3 +16,5 @@
 
 #define STATE_GROUND 0
 #define STATE_AIR 1
+
+#define GRAVITY 9.8
