@@ -846,6 +846,7 @@ void Renderer::DrawTextureRectSeqXY(float x, float y, float z, float sx, float s
 
 	glDisableVertexAttribArray(attribPosition);
 	glDisableVertexAttribArray(attribTexPosition);
+
 }
 
 void Renderer::DrawTextureRectSeqXYDepth(float x, float y, float z, float sx, float sy, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY, float depth)

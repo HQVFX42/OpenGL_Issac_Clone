@@ -2,6 +2,8 @@
 #include "ScnMger.h"
 #include "Global.h"
 
+bool gRoomBoss = false;
+
 ScnMger::ScnMger()
 {
 	mRenderer = NULL;
@@ -24,17 +26,23 @@ ScnMger::ScnMger()
 	mObj[HERO_ID]->SetKind(KIND_HERO);
 	mObj[HERO_ID]->SetHP(10000);
 
+	//Create Boss Object
+	mObj[BOSS_ID] = new Object();
+
 	//Test addobject test building
-	AddObject(1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, KIND_BUILDING, 10000, STATE_GROUND);
+	AddObject(-1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, KIND_BUILDING, 10000, STATE_GROUND);
 	AddObject(0.f, 0.f, 0.f, 10.f, 10.f, -10.f, 0.f, 0.f, 0.f, KIND_BG, 10000, STATE_GROUND);
+	AddObject(4.5f, 0.f, 0.f, .5f, .5f, .5f, 0.f, 0.f, 0.f, KIND_DOOR, 10000, STATE_GROUND);
 
 	//Init Renderer
 	mRenderer = new Renderer(1000, 1000);
 
 	//Load Test Texture
-	mTestTexture = mRenderer->CreatePngTexture("./Textures/Äá»§ÀÌ.png");
+	mTexTest = mRenderer->CreatePngTexture("./Textures/Äá»§ÀÌ.png");
 	mTexSeq = mRenderer->CreatePngTexture("./Textures/Head.png");
-	mBGTexture = mRenderer->CreatePngTexture("./Textures/images.png");
+	mTexBG = mRenderer->CreatePngTexture("./Textures/images.png");
+	mTexDoor = mRenderer->CreatePngTexture("./Textures/Äá»§ÀÌ.png");
+	mTexMonsterBoss = mRenderer->CreatePngTexture("./Textures/MonsterBoss.png");
 
 	//Init Sound
 	mSound = new Sound();
@@ -58,8 +66,9 @@ void ScnMger::Update(float eTime)
 	for (int i = 0; i < MAX_OBJECTS; i++)
 	{
 		if(mObj[i] != NULL)
-		mObj[i]->Update(eTime);
+			mObj[i]->Update(eTime);
 	}
+	if (gRoomBoss) BossCreate();
 }
 
 void ScnMger::DoCollisionTest()
@@ -70,20 +79,39 @@ void ScnMger::DoCollisionTest()
 		{
 			continue;
 		}
-
+		// ¹è°æ Ãæµ¹
+		float x, y, z;
+		int kind;
+		mObj[i]->GetPos(&x, &y, &z);
+		mObj[i]->GetKind(&kind);
+		if (kind == KIND_HERO || kind == KIND_BULLET || kind == KIND_BULLET) 
+		{
+			if (x > 4.5f)
+			{
+				mObj[i]->SetPos(4.5, y, z);
+			}
+			if (x < -4.5f)
+			{
+				mObj[i]->SetPos(-4.5, y, z);
+			}
+			if (y > 4.5f)
+			{
+				mObj[i]->SetPos(x, 4.5, z);
+			}
+			if (y < -4.5f)
+			{
+				mObj[i]->SetPos(x, -4.5, z);
+			}
+		}
+		
+		// Ãæµ¹Ã¼Å©
 		int collisionCount = 0;
 
 		for (int j = i+1; j < MAX_OBJECTS; j++)
 		{
-			if (mObj[j] == NULL)
-			{
-				continue;
-			}
+			if (mObj[j] == NULL) { continue; }
 
-			if (i == j)
-			{
-				continue;
-			}
+			if (i == j) { continue; }
 			//i obj
 			float pX, pY, pZ, sX, sY, sZ;
 			float minX, minY, maxX, maxY, minZ, maxZ;
@@ -125,6 +153,7 @@ void ScnMger::DoCollisionTest()
 			mObj[i]->SetCol(1, 1, 1, 1);
 		}
 	}
+
 }
 
 void ScnMger::ProcessCollision(int i, int j)
@@ -138,6 +167,36 @@ void ScnMger::ProcessCollision(int i, int j)
 	ob1->GetKind(&kind1);
 	ob2->GetKind(&kind2);
 
+	// º¸½º¹æ
+	if (kind1 == KIND_HERO && kind2 == KIND_DOOR)
+	{
+		mTexBG = mRenderer->CreatePngTexture("./Textures/Äá»§ÀÌ.png");
+		gRoomBoss = true;
+		float x, y, z;
+		ob1->GetPos(&x, &y, &z);
+		ob2->GetPos(&x, &y, &z);
+
+		if (x > 4.5f)
+		{
+			ob1->SetPos(-x + .5f, y, z);
+			ob2->SetPos(-x + .5f, y, z);
+		}
+	}
+
+	if (kind1 == KIND_BUILDING && kind2 == KIND_HERO)
+	{
+		int hp1, hp2;
+		ob1->GetHP(&hp1);	//building
+		ob2->GetHP(&hp2);	//bullet
+		hp2 = hp2 - hp1;	//apply damage
+		hp1 = 0;
+
+		ob1->SetHP(hp1);
+		ob2->SetHP(hp2);
+
+		//mSound->PlaySound(mSoundExplosion, false, 3.f);
+	}
+	// ÃÑ¾Ë µ¥¹ÌÁö
 	if (kind1 == KIND_BUILDING && kind2 == KIND_BULLET)
 	{
 		int hp1, hp2;
@@ -151,7 +210,7 @@ void ScnMger::ProcessCollision(int i, int j)
 
 		//mSound->PlaySound(mSoundExplosion, false, 3.f);
 	}
-
+	// ÃÑ¾Ë µ¥¹ÌÁö
 	if (kind1 == KIND_BULLET && kind2 == KIND_BUILDING)
 	{
 		int hp1, hp2;
@@ -263,25 +322,21 @@ float gTime = 0;
 void ScnMger::RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//if (theta >= 360) theta = 0;
-	//else theta += 0.2;
-	//g_Renderer->DrawSolidRect(x + cos(theta * PI / 180) * r, y + sin(theta * PI / 180) * r, 0, theta / 10, 1, 0, 1, 1);
+	glClearColor(.0f, .0f, .0f, .0f);
 
 	for (int i = 0; i < MAX_OBJECTS; i++)
 	{
 		if (mObj[i] != NULL)
 		{
 			float x, y, z, sizeX, sizeY, sizeZ, r, g, b, a;
-			int kind;
+			int kind, hp;
 
 			mObj[i]->GetPos(&x, &y, &z);
 			mObj[i]->GetSize(&sizeX, &sizeY, &sizeZ);
 			mObj[i]->GetCol(&r, &g, &b, &a);
 			mObj[i]->GetKind(&kind);
+			mObj[i]->GetHP(&hp);
 
-			//mRenderer->DrawSolidRect(x*100.f, y*100.f, 0.f, sizeX*100.f, sizeY*100.f, r, g, b, a);
 			if (kind == KIND_BG)
 			{
 				mRenderer->DrawTextureRectDepth(
@@ -291,8 +346,42 @@ void ScnMger::RenderScene()
 					sizeX*100.f,
 					sizeY*100.f,
 					r, g, b, a,
-					mBGTexture,
+					mTexBG,
 					z*100.f
+				);
+			}
+			if (kind == KIND_DOOR)
+			{
+				mRenderer->DrawTextureRectDepth(
+					x*100.f,
+					y*100.f,
+					0,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mTexBG,
+					z*100.f
+				);
+			}
+			if (kind == KIND_BUILDING)
+			{
+				mRenderer->DrawTextureRectHeight(
+					x*100.f,
+					y*100.f,
+					0,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mTexMonsterBoss,
+					z*100.f
+				);
+
+				mRenderer->DrawSolidRectGauge(
+					x*100.f, y*100.f + z * 100.f + 50.f, 0,
+					sizeX*100.f, 4,
+					1, 0, 0, 1,
+					z*100.f,
+					hp / 10000.f
 				);
 			}
 			if (kind == KIND_HERO)
@@ -304,7 +393,7 @@ void ScnMger::RenderScene()
 					sizeX*100.f,
 					sizeY*100.f,
 					r, g, b, a,
-					mTestTexture,
+					mTexTest,
 					z*100.f
 				);
 
@@ -316,7 +405,6 @@ void ScnMger::RenderScene()
 					1.f
 				);
 			}
-
 			if (kind == KIND_BULLET)
 			{
 				mRenderer->DrawTextureRectHeight(
@@ -326,7 +414,7 @@ void ScnMger::RenderScene()
 					sizeX*100.f,
 					sizeY*100.f,
 					r, g, b, a,
-					mTestTexture,
+					mTexTest,
 					z*100.f
 				);
 			}
@@ -357,13 +445,12 @@ void ScnMger::RenderScene()
 
 		}
 	}
-	
 	mRenderer->DrawParticleClimate(
 		0, 0, 0,
 		5,
 		1, 1, 1, 1,
-		- 1.f, 0.1f,
-		mTestTexture,
+		-1.f, 0.1f,
+		mTexSeq,
 		1.f,
 		gTime);
 
@@ -459,7 +546,36 @@ void ScnMger::Shoot(int shootID, float eTime)
 	bvY = bvY + vY;
 	bvZ = bvZ + vZ;
 	
-	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 20, STATE_AIR);
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 100, STATE_AIR);
 	mObj[HERO_ID]->InitBulletCoolTime();
 	//mSound->PlaySound(mSoundFire, false, 3.f);
+}
+
+void ScnMger::BossCreate()
+{
+	AddObject(1.f, 1.f, 0.5f, 0.2f, 0.2f, 0.2f, .0f, .0f, .0f, KIND_BUILDING, 10000, STATE_GROUND);
+	gRoomBoss = false;
+}
+void ScnMger::BossMove()
+{
+	/*float theta = 0;
+	float PI = 3.141592;
+	float r = 1.f;
+	if (theta >= 360) theta = 0;
+	else theta += 0.2;*/
+
+	float pX, pY, pZ;
+	mObj[HERO_ID]->GetPos(&pX, &pY, &pZ);
+	float vX, vY, vZ;
+	mObj[HERO_ID]->GetVel(&vX, &vY, &vZ);
+	float amount = .5f;
+	float bvX, bvY, bvZ;
+	bvX = 0.f;
+	bvY = 0.f;
+	bvZ = 0.f;
+	bvX = bvX + vX;
+	bvY = bvY + vY;
+	bvZ = bvZ + vZ;
+	
+	mObj[BOSS_ID]->ApplyForce(bvX, bvY, bvZ, 1);
 }

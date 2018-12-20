@@ -28,8 +28,6 @@ but WITHOUT ANY WARRANTY.
 #define DIR_UP		0x03
 #define DIR_DOWN	0x04
 
-//float x = 0, y = 0, r = 100, theta = 0;
-
 ScnMger *gScnMger = NULL;
 
 DWORD gPrevT = 0;
@@ -73,6 +71,7 @@ void RenderScene(void)
 	gScnMger->Shoot(gShoot, eTime);
 	gScnMger->GarbageCollector();
 	gScnMger->DoCollisionTest();
+	//gScnMger->BossMove();
 
 	std::cout << gKeyW << "\t" << gKeyS << "\t" << gKeyA << "\t" << gKeyD << "\t" << std::endl;
 	
@@ -88,52 +87,6 @@ void MouseInput(int button, int state, int x, int y)
 {
 	RenderScene();
 }
-
-//void KeyInput(unsigned char key, int x, int y)
-//{
-//	/*static UCHAR pKeyBuffer[256];
-//	DWORD dwDirection = 0; 
-//
-//	if (GetKeyboardState(pKeyBuffer))
-//	{
-//		if (pKeyBuffer[VK_LEFT] & 0xF0) xx-=1;
-//		if (pKeyBuffer[VK_RIGHT] & 0xF0) xx+=1;
-//		if (pKeyBuffer[VK_UP] & 0xF0) yy+=1;
-//		if (pKeyBuffer[VK_DOWN] & 0xF0) yy-=1;
-//	}*/
-//
-//	/*switch (key) {
-//	case 'W':
-//	case 'w':
-//		float x, y;
-//		g_obj->GetPos(&x, &y);
-//		y += 0.5f;
-//		g_obj->SetPos(x, y);
-//		break;
-//	case 'S':
-//	case 's':
-//		g_obj->GetPos(&x, &y);
-//		y -= 0.5f;
-//		g_obj->SetPos(x, y);
-//		break;
-//	case 'A':
-//	case 'a':
-//		g_obj->GetPos(&x, &y);
-//		x -= 0.5f;
-//		g_obj->SetPos(x, y);
-//		break;
-//	case 'D':
-//	case 'd':
-//		g_obj->GetPos(&x, &y);
-//		x += 0.5f;
-//		g_obj->SetPos(x, y);
-//		break;
-//	default:
-//		break;
-//	}*/
-//
-//	RenderScene();
-//}
 
 void KeyDownInput(unsigned char key, int x, int y)
 {

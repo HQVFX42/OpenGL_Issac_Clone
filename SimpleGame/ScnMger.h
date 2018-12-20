@@ -29,6 +29,8 @@ public:
 	void DeleteObject(unsigned int id);
 	int FindEmptyObjectSlot();
 	void Shoot(int shootID, float eTime);
+	void BossCreate();
+	void BossMove();
 	void GarbageCollector();
 	bool RRCollision(float minX, float minY, float maxX, float maxY,
 		float minX1, float minY1, float maxX1, float maxY1);
@@ -41,10 +43,13 @@ private:
 	Renderer * mRenderer;
 	Sound * mSound;
 	
-	GLuint mTestTexture = 0;
-	GLuint mBGTexture = 0;
+	GLuint mTexTest = 0;
+	GLuint mTexBG = 0;
 	GLuint mTexSeq = 0;
+	GLuint mTexDoor = 0;
+	GLuint mTexMonsterBoss = 0;
 	GLuint mTestParticle = 0;
+	
 
 	int mSoundBG = 0;
 	int mSoundFire = 0;
