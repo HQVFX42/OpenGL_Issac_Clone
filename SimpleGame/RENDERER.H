@@ -17,13 +17,17 @@ public:
 	void DrawSolidRect(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a);
 	void DrawSolidRectHeight(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, float height);
 	void DrawTextureRect(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID);
+	void DrawTextureRectDepth(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float depth);
 	void DrawTextureRectHeight(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, float height);
 	void DrawTextureRectSeqXY(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY);
+	void DrawTextureRectSeqXYDepth(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY, float depth);
 	void DrawTextureRectSeqXYHeight(float x, float y, float z, float sizeX, float sizeY, float r, float g, float b, float a, GLuint texID, int currSeqX, int currSeqY, int totalSeqX, int totalSeqY, float height);
 	void DrawParticle(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float timeInSeconds);
 	void DrawParticleClimate(float x, float y, float z, float size, float r, float g, float b, float a, float gDirX, float gDirY, GLuint texID, float ratio, float timeInSeconds);
 	void DrawSolidRectGauge(float x, float y, float z, float sx, float sy, float r, float g, float b, float a, float height, float gauge);
 	void DrawBorderXY(float x, float y, float z, float width, float height, float r, float g, float b, float a);
+
+	void SetCameraCenterPos(float x, float y);
 
 	GLuint CreatePngTexture(char * filePath);
 	GLuint CreateBmpTexture(char * filePath);
@@ -67,5 +71,8 @@ private:
 	int m_ParticleVertexCount;
 	int m_ParticleCloudCount;
 	int m_ParticleCloudVertexCount;
+
+	float m_CameraCenterPosX = 0.f;
+	float m_CameraCenterPosY = 0.f;
 };
 

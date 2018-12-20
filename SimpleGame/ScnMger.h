@@ -28,7 +28,7 @@ public:
 		int kind, int hp, int state);
 	void DeleteObject(unsigned int id);
 	int FindEmptyObjectSlot();
-	void Shoot(int shootID);
+	void Shoot(int shootID, float eTime);
 	void GarbageCollector();
 	bool RRCollision(float minX, float minY, float maxX, float maxY,
 		float minX1, float minY1, float maxX1, float maxY1);
@@ -42,6 +42,7 @@ private:
 	Sound * mSound;
 	
 	GLuint mTestTexture = 0;
+	GLuint mBGTexture = 0;
 	GLuint mTexSeq = 0;
 	GLuint mTestParticle = 0;
 

@@ -10,6 +10,7 @@ private:
 	float mVelX, mVelY, mVelZ;
 	float mAccX, mAccY, mAccZ;
 	float mCoefFric;
+	float mBulletCoolTime, mBulletTime;
 
 	int mKind;
 	int mHP;
@@ -21,6 +22,8 @@ public:
 
 	void Update(float eTime);
 	void ApplyForce(float x, float y, float z, float eTime);
+	bool Fire();
+	void InitBulletCoolTime();
 
 	void GetPos(float *x, float *y, float *z);
 	void SetPos(float x, float y, float z);

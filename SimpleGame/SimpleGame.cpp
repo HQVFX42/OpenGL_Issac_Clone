@@ -53,9 +53,8 @@ void RenderScene(void)
 	gPrevT = CT;
 	float eTime = (float)ET / 1000.f;
 
-	//std::cout << "ET : " << eTime << std::endl;
+	std::cout << "ET : " << eTime << std::endl;
 
-	
 	float forceX = 0.f; 
 	float forceY = 0.f;
 	float forceZ = 0.f;
@@ -71,10 +70,9 @@ void RenderScene(void)
 	gScnMger->ApplyForce(forceX, forceY, forceZ, eTime);
 	gScnMger->Update(eTime);
 	gScnMger->RenderScene();
-	gScnMger->Shoot(gShoot);
+	gScnMger->Shoot(gShoot, eTime);
 	gScnMger->GarbageCollector();
 	gScnMger->DoCollisionTest();
-
 
 	std::cout << gKeyW << "\t" << gKeyS << "\t" << gKeyA << "\t" << gKeyD << "\t" << std::endl;
 	
@@ -177,7 +175,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(1000, 1000);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -194,16 +192,11 @@ int main(int argc, char **argv)
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyDownInput);
 	glutKeyboardUpFunc(KeyUpInput);
-	//glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);	//키다운인풋에 계속 누르면 자동으로다운이 계속호출되는 설정을 꺼주는 함수
 	glutMouseFunc(MouseInput);
 	glutSpecialFunc(SpecialKeyDownInput);
-	glutSpecialUpFunc(SpecialKeyUpInput);
-	/*int a = GLUT_KEY_UP;
-	int a = GLUT_KEY_DOWN;
-	int a = GLUT_KEY_LEFT;
-	int a= GLUT_KEY_RIGHT;*/
-
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);		//키다운인풋에 계속 누르면 자동으로다운이 계속호출되는 설정을 꺼주는 함수
+	glutSpecialUpFunc(SpecialKeyUpInput);
+	
 
 	gScnMger = new ScnMger();
 

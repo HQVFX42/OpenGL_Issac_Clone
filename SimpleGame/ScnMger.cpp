@@ -26,13 +26,15 @@ ScnMger::ScnMger()
 
 	//Test addobject test building
 	AddObject(1.f, 0.f, 0.5f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, KIND_BUILDING, 10000, STATE_GROUND);
+	AddObject(0.f, 0.f, 0.f, 10.f, 10.f, -10.f, 0.f, 0.f, 0.f, KIND_BG, 10000, STATE_GROUND);
 
 	//Init Renderer
-	mRenderer = new Renderer(500, 500);
+	mRenderer = new Renderer(1000, 1000);
 
 	//Load Test Texture
-	mTestTexture = mRenderer->CreatePngTexture("./Textures/images.png");
-	mTexSeq = mRenderer->CreatePngTexture("./Textures/spriteAnim3.png");
+	mTestTexture = mRenderer->CreatePngTexture("./Textures/콩빵이.png");
+	mTexSeq = mRenderer->CreatePngTexture("./Textures/Head.png");
+	mBGTexture = mRenderer->CreatePngTexture("./Textures/images.png");
 
 	//Init Sound
 	mSound = new Sound();
@@ -41,7 +43,7 @@ ScnMger::ScnMger()
 	mSoundBG = mSound->CreateSound("./Sounds/BG.mp3");
 	mSoundFire = mSound->CreateSound("./Sounds/shotgun.mp3");
 	mSoundExplosion = mSound->CreateSound("./Sounds/Explosion.mp3");
-	mSound->PlaySound(mSoundBG, true, 3.f);
+	//mSound->PlaySound(mSoundBG, true, 3.f);
 
 }
 
@@ -147,7 +149,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
 
-		mSound->PlaySound(mSoundExplosion, false, 3.f);
+		//mSound->PlaySound(mSoundExplosion, false, 3.f);
 	}
 
 	if (kind1 == KIND_BULLET && kind2 == KIND_BUILDING)
@@ -161,7 +163,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
 
-		mSound->PlaySound(mSoundExplosion, false, 3.f);
+		//mSound->PlaySound(mSoundExplosion, false, 3.f);
 	}
 }
 
@@ -184,7 +186,7 @@ void ScnMger::GarbageCollector()
 			mObj[i]->GetVel(&vx, &vy, &vz);
 			mag = sqrtf(vx*vx + vy*vy + vz*vz);		//속도의 크기
 
-			if (x > 2.5f || x <-2.5f || y >2.5f || y < -2.5f)
+			if (x > 5.0f || x <-5.0f || y >5.0f || y < -5.0f)
 			{
 				DeleteObject(i);
 			}
@@ -256,6 +258,7 @@ void ScnMger::ApplyForce(float x, float y, float z, float eTime)
 }
 
 int gSeq = 0;
+float gTime = 0;
 
 void ScnMger::RenderScene()
 {
@@ -271,51 +274,87 @@ void ScnMger::RenderScene()
 		if (mObj[i] != NULL)
 		{
 			float x, y, z, sizeX, sizeY, sizeZ, r, g, b, a;
+			int kind;
+
 			mObj[i]->GetPos(&x, &y, &z);
 			mObj[i]->GetSize(&sizeX, &sizeY, &sizeZ);
 			mObj[i]->GetCol(&r, &g, &b, &a);
+			mObj[i]->GetKind(&kind);
 
 			//mRenderer->DrawSolidRect(x*100.f, y*100.f, 0.f, sizeX*100.f, sizeY*100.f, r, g, b, a);
+			if (kind == KIND_BG)
+			{
+				mRenderer->DrawTextureRectDepth(
+					x*100.f,
+					y*100.f,
+					0,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mBGTexture,
+					z*100.f
+				);
+			}
+			if (kind == KIND_HERO)
+			{
+				mRenderer->DrawTextureRectHeight(
+					x*100.f,
+					y*100.f,
+					0,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mTestTexture,
+					z*100.f
+				);
+
+				mRenderer->DrawSolidRectGauge(
+					x*100.f, y*100.f + z * 100.f, 0,
+					sizeX*100.f, 4,
+					1, 0, 0, 1,
+					z*100.f,
+					1.f
+				);
+			}
+
+			if (kind == KIND_BULLET)
+			{
+				mRenderer->DrawTextureRectHeight(
+					x*100.f,
+					y*100.f,
+					0,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mTestTexture,
+					z*100.f
+				);
+			}
 			
-			mRenderer->DrawTextureRectHeight(
-			x*100.f,
-			y*100.f,
-			0,
-			sizeX*100.f,
-			sizeY*100.f,
-			r, g, b, a,
-			mTestTexture,
-			z*100.f
-			);
-	
-			mRenderer->DrawSolidRectGauge(
-				x*100.f, y*100.f+z*100.f, 0,
-				sizeX*100.f, 3,
-				1, 0, 0, 1,
-				z*100.f,
-				0.5f
-			);
-
 			// 스프라이트 애니메이션
-			/*int seqX, seqY;
-			seqX = gSeq % 7;
-			seqY = (int)(gSeq / 7);
+			/*if (kind == KIND_BUILDING) 
+			{
+				int seqX, seqY;
+				seqX = gSeq % 7;
+				seqY = (int)(gSeq / 7);
 
-			gSeq++;
-			if (gSeq > 35)
-				gSeq = 0;
+				gSeq++;
+				if (gSeq > 35)
+					gSeq = 0;
 
-			mRenderer->DrawTextureRectSeqXY(
-				x*100.f,
-				y*100.f,
-				0.f,
-				sizeX*100.f,
-				sizeY*100.f,
-				r, g, b, a,
-				mTexSeq,
-				seqX, seqY,
-				7, 2
-			);*/
+				mRenderer->DrawTextureRectSeqXY(
+					x*100.f,
+					y*100.f,
+					0.f,
+					sizeX*100.f,
+					sizeY*100.f,
+					r, g, b, a,
+					mTexSeq,
+					seqX, seqY,
+					10, 1
+				);
+			}*/
+
 		}
 	}
 	
@@ -326,9 +365,9 @@ void ScnMger::RenderScene()
 		- 1.f, 0.1f,
 		mTestTexture,
 		1.f,
-		gSeq);
+		gTime);
 
-	gSeq += 0.01f;
+	gTime += 0.01f;
 }
 
 void ScnMger::AddObject(float pX, float pY, float pZ, float sX, float sY, float sZ, float vX, float vY, float vZ, int kind, int hp, int state)
@@ -371,9 +410,15 @@ void ScnMger::DeleteObject(unsigned int id)
 	}
 }
 
-void ScnMger::Shoot(int shootID)
+void ScnMger::Shoot(int shootID, float eTime)
 {
+
 	if (shootID == SHOOT_NONE)
+	{
+		return;
+	}
+
+	if (!mObj[HERO_ID]->Fire())
 	{
 		return;
 	}
@@ -413,8 +458,8 @@ void ScnMger::Shoot(int shootID)
 	bvX = bvX + vX;
 	bvY = bvY + vY;
 	bvZ = bvZ + vZ;
-
-	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 20,STATE_AIR);
-
-	mSound->PlaySound(mSoundFire, false, 3.f);
+	
+	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 20, STATE_AIR);
+	mObj[HERO_ID]->InitBulletCoolTime();
+	//mSound->PlaySound(mSoundFire, false, 3.f);
 }

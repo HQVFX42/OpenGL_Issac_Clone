@@ -6,12 +6,16 @@
 
 Object::Object()
 {
+	mBulletCoolTime = .0f;
+	mBulletTime = .15f;	//키 계속 누르고 있을 시 나가는 총알 갯수 조절
 }
 
 
 Object::~Object()
 {
 }
+
+
 
 void Object::Update(float eTime)
 {
@@ -74,7 +78,13 @@ void Object::Update(float eTime)
 	{
 		mState = STATE_AIR;
 	}
-
+	
+	mBulletCoolTime -= eTime;
+	
+	if (mBulletCoolTime <= 0.f)
+	{
+		mBulletCoolTime = -1.f;
+	}
 }
 
 void Object::ApplyForce(float x, float y, float z, float eTime)
@@ -90,6 +100,20 @@ void Object::ApplyForce(float x, float y, float z, float eTime)
 	mAccX = 0.f;
 	mAccY = 0.f;
 	mAccZ = 0.f;
+}
+
+void Object::InitBulletCoolTime()
+{
+	mBulletCoolTime = mBulletTime;
+}
+
+bool Object::Fire()
+{
+	if (mBulletCoolTime <= 0.f)
+	{
+		return true;
+	}
+	return false;
 }
 
 void Object::GetPos(float *x, float *y, float *z)

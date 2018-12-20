@@ -13,6 +13,7 @@
 #define KIND_HERO 0
 #define KIND_BULLET 1
 #define KIND_BUILDING 2
+#define KIND_BG 3
 
 #define STATE_GROUND 0
 #define STATE_AIR 1
