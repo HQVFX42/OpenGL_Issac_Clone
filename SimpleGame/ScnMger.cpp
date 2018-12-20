@@ -39,7 +39,7 @@ ScnMger::ScnMger()
 
 	//Load Test Texture
 	mTexTest = mRenderer->CreatePngTexture("./Textures/콩빵이.png");
-	mTexSeq = mRenderer->CreatePngTexture("./Textures/Head.png");
+	mTexSeq = mRenderer->CreatePngTexture("./Textures/Jump.png");
 	mTexBG = mRenderer->CreatePngTexture("./Textures/images.png");
 	mTexDoor = mRenderer->CreatePngTexture("./Textures/콩빵이.png");
 	mTexMonsterBoss = mRenderer->CreatePngTexture("./Textures/MonsterBoss.png");
@@ -48,10 +48,11 @@ ScnMger::ScnMger()
 	mSound = new Sound();
 
 	//Load Sound
-	mSoundBG = mSound->CreateSound("./Sounds/BG.mp3");
-	mSoundFire = mSound->CreateSound("./Sounds/shotgun.mp3");
+	mSoundBG = mSound->CreateSound("./Sounds/bgm.mp3");
+	mSoundFire = mSound->CreateSound("./Sounds/bullet.mp3");
 	mSoundExplosion = mSound->CreateSound("./Sounds/Explosion.mp3");
-	//mSound->PlaySound(mSoundBG, true, 3.f);
+	mSoundHitBoss = mSound->CreateSound("./Sounds/hitboss.mp3");
+	mSound->PlaySound(mSoundBG, true, 3.f);
 
 }
 
@@ -194,7 +195,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
 
-		//mSound->PlaySound(mSoundExplosion, false, 3.f);
+		mSound->PlaySound(mSoundHitBoss, false, 3.f);
 	}
 	// 총알 데미지
 	if (kind1 == KIND_BUILDING && kind2 == KIND_BULLET)
@@ -208,7 +209,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
 
-		//mSound->PlaySound(mSoundExplosion, false, 3.f);
+		mSound->PlaySound(mSoundHitBoss, false, 3.f);
 	}
 	// 총알 데미지
 	if (kind1 == KIND_BULLET && kind2 == KIND_BUILDING)
@@ -222,7 +223,7 @@ void ScnMger::ProcessCollision(int i, int j)
 		ob1->SetHP(hp1);
 		ob2->SetHP(hp2);
 
-		//mSound->PlaySound(mSoundExplosion, false, 3.f);
+		mSound->PlaySound(mSoundHitBoss, false, 3.f);
 	}
 }
 
@@ -386,6 +387,30 @@ void ScnMger::RenderScene()
 			}
 			if (kind == KIND_HERO)
 			{
+				// 스프라이트 애니메이션
+				/*if (kind == KIND_BUILDING)
+				{
+					int seqX, seqY;
+					seqX = gSeq % 4;
+					seqY = (int)(gSeq / 4);
+
+					gSeq++;
+					if (gSeq > 35)
+						gSeq = 0;
+
+					mRenderer->DrawTextureRectSeqXYHeight(
+						x*100.f,
+						y*100.f,
+						0.f,
+						sizeX*100.f,
+						sizeY*100.f,
+						r, g, b, a,
+						mTexSeq,
+						seqX, seqY,
+						4, 1,
+						z*100.f
+					);
+				}*/
 				mRenderer->DrawTextureRectHeight(
 					x*100.f,
 					y*100.f,
@@ -418,31 +443,6 @@ void ScnMger::RenderScene()
 					z*100.f
 				);
 			}
-			
-			// 스프라이트 애니메이션
-			/*if (kind == KIND_BUILDING) 
-			{
-				int seqX, seqY;
-				seqX = gSeq % 7;
-				seqY = (int)(gSeq / 7);
-
-				gSeq++;
-				if (gSeq > 35)
-					gSeq = 0;
-
-				mRenderer->DrawTextureRectSeqXY(
-					x*100.f,
-					y*100.f,
-					0.f,
-					sizeX*100.f,
-					sizeY*100.f,
-					r, g, b, a,
-					mTexSeq,
-					seqX, seqY,
-					10, 1
-				);
-			}*/
-
 		}
 	}
 	mRenderer->DrawParticleClimate(
@@ -548,7 +548,7 @@ void ScnMger::Shoot(int shootID, float eTime)
 	
 	AddObject(pX, pY, pZ, 0.2f, 0.2f, 0.2f, bvX, bvY, bvZ, KIND_BULLET, 100, STATE_AIR);
 	mObj[HERO_ID]->InitBulletCoolTime();
-	//mSound->PlaySound(mSoundFire, false, 3.f);
+	mSound->PlaySound(mSoundFire, false, 3.f);
 }
 
 void ScnMger::BossCreate()

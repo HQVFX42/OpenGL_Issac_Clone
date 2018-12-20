@@ -54,6 +54,7 @@ private:
 	int mSoundBG = 0;
 	int mSoundFire = 0;
 	int mSoundExplosion = 0;
+	int mSoundHitBoss = 0;
 };
 
 
