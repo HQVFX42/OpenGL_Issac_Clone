@@ -2,4 +2,4 @@
 - Issac clone project with OpenGL
 
 ## Textures & Particles
-- [Renderer](./Renderer.cpp)
+- [Renderer](./SimpleGame/Renderer.cpp)
