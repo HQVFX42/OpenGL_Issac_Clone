@@ -55,6 +55,44 @@
 	}
 	```
 
+- Collisions
+    - RR (2D Rectangle Collision)
+		```cpp
+		bool ScnMger::RRCollision(float minX, float minY, float maxX, float maxY,
+			float minX1, float minY1, float maxX1, float maxY1)
+		{
+			if (maxX < minX1)
+				return false;
+			if (maxX1 < minX)
+				return false;
+			if (maxY < minY1)
+				return false;
+			if (maxY1 < minY)
+				return false;
+			return true;
+		}
+		```
+	- BB (3D Bounding Box Collision)
+		```cpp
+		bool ScnMger::BBCollision(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+			float minX1, float minY1, float minZ1, float maxX1, float maxY1, float maxZ1)
+		{
+			if (maxX < minX1)
+				return false;
+			if (maxX1 < minX)
+				return false;
+			if (maxY < minY1)
+				return false;
+			if (maxY1 < minY)
+				return false;
+			if (maxZ < minZ1)
+				return false;
+			if (maxZ1 < minZ)
+				return false;
+			return true;
+		}
+    	```
+
 - apply damage
     ```cpp
 	void ScnMger::ProcessCollision(int i, int j)
