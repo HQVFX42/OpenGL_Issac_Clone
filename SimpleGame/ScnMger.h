@@ -22,7 +22,7 @@ public:
 	void DoCollisionTest();
 	void ApplyForce(float x, float y, float z, float eTime);
 	void RenderScene();
-	void AddObject(float pX, float pY, float pZ, 
+	void AddObject(float pX, float pY, float pZ,
 		float sX, float sY, float sZ,
 		float vX, float vY, float vZ,
 		int kind, int hp, int state);
@@ -39,17 +39,17 @@ public:
 	void ProcessCollision(int i, int j);
 
 private:
-	Object * mObj[MAX_OBJECTS];
-	Renderer * mRenderer;
-	Sound * mSound;
-	
+	Object* mObj[MAX_OBJECTS];
+	Renderer* mRenderer;
+	Sound* mSound;
+
 	GLuint mTexTest = 0;
 	GLuint mTexBG = 0;
 	GLuint mTexSeq = 0;
 	GLuint mTexDoor = 0;
 	GLuint mTexMonsterBoss = 0;
 	GLuint mTestParticle = 0;
-	
+
 
 	int mSoundBG = 0;
 	int mSoundFire = 0;
